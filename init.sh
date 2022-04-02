@@ -3,9 +3,10 @@ git submodule update --init --recursive
 
 python3 -m venv .venv
 source .venv/bin/activate
+python3 -m pip install -r dev-requirements.txt
 
 cd SEAL-Python
-python3 -m pip install -r requirements.txt mypy
+python3 -m pip install -r requirements.txt
 
 # Build the SEAL lib
 cd SEAL
