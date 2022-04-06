@@ -2,6 +2,9 @@ from typing import Tuple
 
 import numpy as np
 
+# VectorInt std::vector<std::int64_t>
+# VectorDouble std::vector<double>
+
 std_array = tuple
 std_string = str
 std_vector = list
