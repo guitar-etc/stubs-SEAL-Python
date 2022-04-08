@@ -8,6 +8,7 @@ authors = ["y"]
 python = "3.10.4"
 mypy = "^0.942"
 numpy = "^1.22.3"
+pybind11 = "^2.9.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.1"

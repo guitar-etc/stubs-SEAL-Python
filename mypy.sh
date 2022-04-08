@@ -1,1 +1,1 @@
-MYPYPATH=stubs mypy stubs tests
+MYPYPATH=stubs mypy tests/seal

@@ -1,4 +1,4 @@
-from typing import Tuple, TypeAlias
+from typing import Tuple, TypeAlias, TypeVar
 
 import numpy as np
 from numpy.typing import NDArray
@@ -12,10 +12,6 @@ int = int
 bool = bool
 
 
-class py:
-    array_t: TypeAlias = NDArray
-
-
 class std:
     array: TypeAlias = tuple
     string: TypeAlias = str
@@ -23,6 +19,15 @@ class std:
     size_t: TypeAlias = int
     uint64_t: TypeAlias = np.uint64
     streamoff: TypeAlias = long
+
+
+# T = TypeVar("T")
+# T = TypeVar("T", std.uint64_t, double)
+
+
+class py:
+    array_t_double: TypeAlias = NDArray[np.float64]
+    # array_t: TypeAlias = NDArray[T]
 
 
 # unique enough?
