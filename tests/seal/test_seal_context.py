@@ -1,8 +1,9 @@
-from stubs.my_types import *
+from stubs.cpp_types import *
 
 from seal import *
 
 
+# imported from cpp_types
 # T = TypeVar("T")
 def print_vector(vector: std.vector[T], size: int, precision: int):
     with np.printoptions(precision=precision):

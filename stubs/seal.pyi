@@ -3,7 +3,7 @@ from typing import Any, ClassVar, List, overload
 import numpy as np
 from numpy.typing import NDArray
 
-from stubs.my_types import bool, double, int, parms_id_type, py, std
+from stubs.cpp_types import bool, double, int, parms_id_type, py, std
 
 class BatchEncoder:
     def __init__(self, arg0: SEALContext) -> None: ...
