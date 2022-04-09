@@ -1,17 +1,16 @@
-from typing import Any, ClassVar, Iterable, Iterator, List, overload
+from typing import Any, ClassVar, List, overload
 
 import numpy as np
 from numpy.typing import NDArray
 
 from stubs.my_types import bool, double, int, parms_id_type, py, std
 
-
 class BatchEncoder:
     def __init__(self, arg0: SEALContext) -> None: ...
     def decode(self, arg0: Plaintext) -> NDArray[np.int64]: ...
     def encode(self, arg0: NDArray[np.int64]) -> Plaintext: ...
     def slot_count(self) -> int: ...
-double
+
 class CKKSEncoder:
     def __init__(self, context: SEALContext) -> None: ...
     def decode(self, plain: Plaintext) -> py.array_t_double: ...
@@ -58,13 +57,15 @@ class CoeffModulus:
     def MaxBitCount(
         cls,
         poly_modulus_degree: std.size_t,
-        sec_level: sec_level_type = sec_level_type.tc128,
+        sec_level: sec_level_type = ...,
+        # sec_level: sec_level_type = sec_level_type.tc128,
     ) -> Any: ...
     @classmethod
     def BFVDefault(
         cls,
         poly_modulus_degree: std.size_t,
-        sec_level: sec_level_type = sec_level_type.tc128,
+        sec_level: sec_level_type = ...,
+        # sec_level: sec_level_type = sec_level_type.tc128,
     ) -> Any: ...
     @classmethod
     def Create(
@@ -358,8 +359,10 @@ class SEALContext:
     def __init__(
         self,
         parms: EncryptionParameters,
-        expand_mod_chain: bool = True,
-        sec_level: sec_level_type = sec_level_type.tc128,
+        expand_mod_chain: bool = ...,
+        # expand_mod_chain: bool = True,
+        sec_level: sec_level_type = ...,
+        # sec_level: sec_level_type = sec_level_type.tc128,
     ) -> None: ...
     def get_context_data(self, parms_id: parms_id_type) -> ContextData: ...
     def key_context_data(self) -> ContextData: ...
