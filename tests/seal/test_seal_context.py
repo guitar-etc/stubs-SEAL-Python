@@ -1,10 +1,24 @@
+import sys
+
 from stubs.cpp_types import *
 
 from seal import *
 
-
 # imported from cpp_types
 # T = TypeVar("T")
+
+
+def LINE():
+    return sys._getframe(1).f_lineno  # type: ignore
+
+
+# Helper function: Print line number.
+def print_line(line_number: int):
+    print(f"Line {line_number} --> ")
+    # TODO setw
+    # std::cout << "Line " << std::setw(3) << line_number << " --> ";
+
+
 def print_vector(vector: std.vector[T], size: int, precision: int):
     with np.printoptions(precision=precision):
         print(np.array(vector[:size]))  # type: ignore
@@ -130,7 +144,6 @@ def test_seal_context():
     print(f"Number of slots: {slot_count}")
 
     input = [0.0] * slot_count
-    # input: std.vector[double] = [0.0] * slot_count
 
     curr_point = 0
     step_size = 1.0 / (slot_count - 1)
@@ -149,28 +162,34 @@ def test_seal_context():
     plain_coeff1 = encoder.encode(0.4, scale)
     plain_coeff0 = encoder.encode(1.0, scale)
 
-    # print_line(__LINE__);
-    # cout << "Encode input vectors." << endl;
+    print_line(LINE())
+    print("Encode input vectors.")
     x_plain = encoder.encode(input, scale)
     x1_encrypted = encryptor.encrypt(x_plain)
 
     # To compute x^3 we first compute x^2 and relinearize. However, the scale has
     # now grown to 2^80.
-    # print_line(__LINE__);
-    # cout << "Compute x^2 and relinearize:" << endl;
+    print_line(LINE())
+    print("Compute x^2 and relinearize:")
     x3_encrypted = evaluator.multiply(x1_encrypted, x1_encrypted)
     # x3_encrypted = evaluator.square(x1_encrypted);
     evaluator.relinearize_inplace(x3_encrypted, relin_keys)
-    # cout << "    + Scale of x^2 before rescale: " << log2(x3_encrypted.scale()) << " bits" << endl;
+    from math import log2
+
+    print(
+        f"    + Scale of x^2 before rescale: {log2(x3_encrypted.scale())} bits"
+    )
 
     # Now rescale; in addition to a modulus switch, the scale is reduced down by
     # a factor equal to the prime that was switched away (40-bit prime). Hence, the
     # new scale should be close to 2^40. Note, however, that the scale is not equal
     # to 2^40: this is because the 40-bit prime is only close to 2^40.
-    # print_line(__LINE__);
-    # cout << "Rescale x^2." << endl;
+    print_line(LINE())
+    print("Rescale x^2.")
     evaluator.rescale_to_next_inplace(x3_encrypted)
-    # cout << "    + Scale of x^2 after rescale: " << log2(x3_encrypted.scale()) << " bits" << endl;
+    print(
+        f"    + Scale of x^2 after rescale: {log2(x3_encrypted.scale())} bits"
+    )
 
     # Now x3_encrypted is at a different level than x1_encrypted, which prevents us
     # from multiplying them to compute x^3. We could simply switch x1_encrypted to
@@ -178,34 +197,46 @@ def test_seal_context():
     # need to multiply the x^3 term with PI (plain_coeff3), we instead compute PI*x
     # first and multiply that with x^2 to obtain PI*x^3. To this end, we compute
     # PI*x and rescale it back from scale 2^80 to something close to 2^40.
-    # print_line(__LINE__);
-    # cout << "Compute and rescale PI*x." << endl;
+    print_line(LINE())
+    print("Compute and rescale PI*x.")
     x1_encrypted_coeff3 = evaluator.multiply_plain(x1_encrypted, plain_coeff3)
-    # cout << "    + Scale of PI*x before rescale: " << log2(x1_encrypted_coeff3.scale()) << " bits" << endl;
+    print(
+        f"    + Scale of PI*x before rescale: {log2(x1_encrypted_coeff3.scale())} bits"
+    )
     evaluator.rescale_to_next_inplace(x1_encrypted_coeff3)
-    # cout << "    + Scale of PI*x after rescale: " << log2(x1_encrypted_coeff3.scale()) << " bits" << endl;
+    print(
+        f"    + Scale of PI*x after rescale: {log2(x1_encrypted_coeff3.scale())} bits"
+    )
 
     # Since x3_encrypted and x1_encrypted_coeff3 have the same exact scale and use
     # the same encryption parameters, we can multiply them together. We write the
     # result to x3_encrypted, relinearize, and rescale. Note that again the scale
     # is something close to 2^40, but not exactly 2^40 due to yet another scaling
     # by a prime. We are down to the last level in the modulus switching chain.
-    # print_line(__LINE__);
-    # cout << "Compute, relinearize, and rescale (PI*x)*x^2." << endl;
+    print_line(LINE())
+    print("Compute, relinearize, and rescale (PI*x)*x^2.")
     evaluator.multiply_inplace(x3_encrypted, x1_encrypted_coeff3)
     evaluator.relinearize_inplace(x3_encrypted, relin_keys)
-    # cout << "    + Scale of PI*x^3 before rescale: " << log2(x3_encrypted.scale()) << " bits" << endl;
+    print(
+        f"    + Scale of PI*x^3 before rescale: {log2(x3_encrypted.scale())} bits"
+    )
     evaluator.rescale_to_next_inplace(x3_encrypted)
-    # cout << "    + Scale of PI*x^3 after rescale: " << log2(x3_encrypted.scale()) << " bits" << endl;
+    print(
+        f"    + Scale of PI*x^3 after rescale: {log2(x3_encrypted.scale())} bits"
+    )
 
     # Next we compute the degree one term. All this requires is one multiply_plain
     # with plain_coeff1. We overwrite x1_encrypted with the result.
-    # print_line(__LINE__);
-    # cout << "Compute and rescale 0.4*x." << endl;
+    print_line(LINE())
+    print("Compute and rescale 0.4*x.")
     evaluator.multiply_plain_inplace(x1_encrypted, plain_coeff1)
-    # cout << "    + Scale of 0.4*x before rescale: " << log2(x1_encrypted.scale()) << " bits" << endl;
+    print(
+        f"    + Scale of 0.4*x before rescale: {log2(x1_encrypted.scale())} bits"
+    )
     evaluator.rescale_to_next_inplace(x1_encrypted)
-    # cout << "    + Scale of 0.4*x after rescale: " << log2(x1_encrypted.scale()) << " bits" << endl;
+    print(
+        f"    + Scale of 0.4*x after rescale: {log2(x1_encrypted.scale())} bits"
+    )
 
     # Now we would hope to compute the sum of all three terms. However, there is
     # a serious problem: the encryption parameters used by all three terms are
@@ -214,15 +245,17 @@ def test_seal_context():
     # the same, and also that the encryption parameters (parms_id) match. If there
     # is a mismatch, Evaluator will throw an exception.
     # cout << endl;
-    # print_line(__LINE__);
-    # cout << "Parameters used by all three terms are different." << endl;
-    # cout << "    + Modulus chain index for x3_encrypted: "
-    #      << context.get_context_data(x3_encrypted.parms_id())->chain_index() << endl;
-    # cout << "    + Modulus chain index for x1_encrypted: "
-    #      << context.get_context_data(x1_encrypted.parms_id())->chain_index() << endl;
-    # cout << "    + Modulus chain index for plain_coeff0: "
-    #      << context.get_context_data(plain_coeff0.parms_id())->chain_index() << endl;
-    # cout << endl;
+    print_line(LINE())
+    print("Parameters used by all three terms are different.")
+    print(
+        f"    + Modulus chain index for x3_enc) {context.get_context_data(x3_encrypted.parms_id()).chain_index()}"
+    )
+    print(
+        f"    + Modulus chain index for x1_enc) {context.get_context_data(x1_encrypted.parms_id()).chain_index()}"
+    )
+    print(
+        f"    + Modulus chain index for plain_) {context.get_context_data(plain_coeff0.parms_id()).chain_index()}"
+    )
 
     # Let us carefully consider what the scales are at this point. We denote the
     # primes in coeff_modulus as P_0, P_1, P_2, P_3, in this order. P_3 is used as
@@ -238,16 +271,11 @@ def test_seal_context():
     #     - The contant term 1 has scale 2^40 and is at level 2.
     # Although the scales of all three terms are approximately 2^40, their exact
     # values are different, hence they cannot be added together.
-    # print_line(__LINE__);
-    # cout << "The exact scales of all three terms are different:" << endl;
-    # ios old_fmt(nullptr);
-    # old_fmt.copyfmt(cout);
-    # cout << fixed << setprecision(10);
-    # cout << "    + Exact scale in PI*x^3: " << x3_encrypted.scale() << endl;
-    # cout << "    + Exact scale in  0.4*x: " << x1_encrypted.scale() << endl;
-    # cout << "    + Exact scale in      1: " << plain_coeff0.scale() << endl;
-    # cout << endl;
-    # cout.copyfmt(old_fmt);
+    print_line(LINE())
+    print("The exact scales of all three terms are different:")
+    print(f"    + Exact scale in PI*x^3: {x3_encrypted.scale()}")
+    print(f"    + Exact scale in  0.4*x: {x1_encrypted.scale()}")
+    print(f"    + Exact scale in      1: {plain_coeff0.scale()}")
 
     # There are many ways to fix this problem. Since P_2 and P_1 are really close
     # to 2^40, we can simply "lie" to Microsoft SEAL and set the scales to be the
@@ -259,8 +287,8 @@ def test_seal_context():
     # make sure to encode 1 with appropriate encryption parameters (parms_id).
     # In this example we will use the first (simplest) approach and simply change
     # the scale of PI*x^3 and 0.4*x to 2^40.
-    # print_line(__LINE__);
-    # cout << "Normalize scales to 2^40." << endl;
+    print_line(LINE())
+    print("Normalize scales to 2^40.")
     x3_encrypted.scale(pow(2.0, 40))
     x1_encrypted.scale(pow(2.0, 40))
 
@@ -268,23 +296,23 @@ def test_seal_context():
     # to fix by using traditional modulus switching (no rescaling). CKKS supports
     # modulus switching just like the BFV scheme, allowing us to switch away parts
     # of the coefficient modulus when it is simply not needed.
-    # print_line(__LINE__);
-    # cout << "Normalize encryption parameters to the lowest level." << endl;
+    print_line(LINE())
+    print("Normalize encryption parameters to the lowest level.")
     last_parms_id = x3_encrypted.parms_id()
     evaluator.mod_switch_to_inplace(x1_encrypted, last_parms_id)
     evaluator.mod_switch_to_inplace(plain_coeff0, last_parms_id)
 
     # All three ciphertexts are now compatible and can be added.
-    # print_line(__LINE__);
-    # cout << "Compute PI*x^3 + 0.4*x + 1." << endl;
+    print_line(LINE())
+    print("Compute PI*x^3 + 0.4*x + 1.")
     encrypted_result = evaluator.add(x3_encrypted, x1_encrypted)
     evaluator.add_plain_inplace(encrypted_result, plain_coeff0)
 
     # First print the true result.
     plain_result: Plaintext
-    # print_line(__LINE__);
-    # cout << "Decrypt and decode PI*x^3 + 0.4x + 1." << endl;
-    # cout << "    + Expected result:" << endl;
+    print_line(LINE())
+    print("Decrypt and decode PI*x^3 + 0.4x + 1.")
+    print("    + Expected result:")
     true_result: std.vector[double] = []
     for x in input:
         true_result.append((3.14159265 * x * x + 0.4) * x + 1)
@@ -294,11 +322,13 @@ def test_seal_context():
     # Decrypt, decode, and print the result.
     plain_result = decryptor.decrypt(encrypted_result)
     result = encoder.decode(plain_result)
-    # cout << "    + Computed result ...... Correct." << endl;
+    print("    + Computed result ...... Correct.")
     print_vector(result, 3, 7)
 
     # While we did not show any computations on complex numbers in these examples,
     # the CKKSEncoder would allow us to have done that just as easily. Additions
     # and multiplications of complex numbers behave just as one would expect.
 
-    assert 0
+    from numpy.testing import assert_almost_equal
+
+    assert_almost_equal(result[:3], true_result[:3], decimal=7)
