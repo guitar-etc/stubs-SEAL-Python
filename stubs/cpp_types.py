@@ -31,7 +31,7 @@ class std:
 
 class py:
     array_t: TypeAlias = list[T]
-    array_t_double: TypeAlias = array_t[double]
+    # array_t_double: TypeAlias = array_t[double]
     # array_t_double: TypeAlias = NDArray[np.float64]
     # array_t: TypeAlias = NDArray[T]
 
