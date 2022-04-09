@@ -8,10 +8,11 @@ import numpy as np
 # VectorDouble std::vector<double>
 
 double = float
-int = int
-bool = bool
+# append '_' to differentiate with python's native type
+int_ = int
+bool_ = bool
 
-long = int
+long = int_
 
 # TODO bound to np.generic_type
 T = TypeVar("T")
@@ -23,9 +24,10 @@ class std:
     array: TypeAlias = tuple[T]
     string: TypeAlias = str
     vector: TypeAlias = list[T]
-    size_t: TypeAlias = int
+    size_t: TypeAlias = int_
     # 여기도 numpy 뺄까?
     uint64_t: TypeAlias = np.uint64
+    int64_t: TypeAlias = np.int64
     streamoff: TypeAlias = long
 
 
