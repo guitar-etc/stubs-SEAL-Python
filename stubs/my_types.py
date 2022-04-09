@@ -11,11 +11,14 @@ long = int
 int = int
 bool = bool
 
+# TODO bound to np.generic_type
+T = TypeVar("T")
+
 
 class std:
-    array: TypeAlias = tuple
+    array: TypeAlias = tuple[T]
     string: TypeAlias = str
-    vector: TypeAlias = list
+    vector: TypeAlias = list[T]
     size_t: TypeAlias = int
     uint64_t: TypeAlias = np.uint64
     streamoff: TypeAlias = long
