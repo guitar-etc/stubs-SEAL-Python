@@ -1,18 +1,22 @@
 from typing import Tuple, TypeAlias, TypeVar
 
 import numpy as np
-from numpy.typing import NDArray
+
+# from numpy.typing import NDArray
 
 # VectorInt std::vector<std::int64_t>
 # VectorDouble std::vector<double>
 
 double = float
-long = int
 int = int
 bool = bool
 
+long = int
+
 # TODO bound to np.generic_type
 T = TypeVar("T")
+# T = TypeVar("T")
+# T = TypeVar("T", std.uint64_t, double)
 
 
 class std:
@@ -20,12 +24,9 @@ class std:
     string: TypeAlias = str
     vector: TypeAlias = list[T]
     size_t: TypeAlias = int
+    # 여기도 numpy 뺄까?
     uint64_t: TypeAlias = np.uint64
     streamoff: TypeAlias = long
-
-
-# T = TypeVar("T")
-# T = TypeVar("T", std.uint64_t, double)
 
 
 class py:
