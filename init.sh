@@ -16,8 +16,8 @@ cmake --build build -j9
 cd ..
 
 python3.10 setup.py build_ext -i
-mv seal.cpython* ../
-cd ..
+# mv seal.cpython* ../
+# cd ..
 
 # This will overwrite?
 # stubgen -m seal -o stubs
